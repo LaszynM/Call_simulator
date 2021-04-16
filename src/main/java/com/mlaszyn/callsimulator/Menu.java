@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+//Main class that initiates all required objects
+//and is rensponsible for communication with application user
 public class Menu {
     List<User> userList;
     //Start the system:
@@ -29,6 +31,7 @@ public class Menu {
     }
 
     public void startProgram() {
+        //TODO
        /* while (true) {
             //System.out.print("\033[H\033[2J");
             //System.out.flush();
