@@ -34,10 +34,32 @@ public class CallSystem {
     //Ending call
     //TODO differentiate "disconnect" and "no active call"
     public boolean endCall(User user) {
-
+        if(user.getAvailable() == true)
+            return false;
+        Call find;
         for(int i = 0; i < callList.size(); i++) {
+            find = callList.get(i);
+            if(find.getCaller() == user || find.getReceiver() == user) {
+                find.getReceiver().setAvailable(true);
+                find.getCaller().setAvailable(true);
+                String callerLog = "Call to:" + find.getReceiver().getNumber() +
+                        " finished, duration from:" + find.getStartDate() + " to:" + find.getHangupDate();
+                String receiverLog= "Call from:" + find.getCaller().getNumber() +
+                        " finished, duration from:" + find.getStartDate() + " to:" + find.getHangupDate();
 
+                //TODO
+                //writeLog(find.getReceiver().getNumber(), callerLog);
+                //writeLog(find.getCaller().getNumber(), receiverLog);
+
+                //remove object from list
+                //IMPORTANT NOTE
+                //in c/c++ there should be delete called to destroy object
+                //in Java garbage collector should remove object here
+                callList.remove(i);
+                find = null;
+                break;
+            }
         }
-
+        return true;
     }
 }
