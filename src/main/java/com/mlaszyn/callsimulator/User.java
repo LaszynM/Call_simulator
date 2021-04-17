@@ -1,7 +1,5 @@
 package main.java.com.mlaszyn.callsimulator;
 
-import java.util.Calendar;
-
 //Representation of user,
 //each user has it's own
 //file containing history
@@ -11,6 +9,13 @@ public class User {
     CallSystem callSystem;
     private final String number;
     private boolean available;
+
+    //Reading logs
+    //type 0 - calls, type 1 - messages, type 2 - all
+    //mode 0 - last, mode 1 - all
+    public void readLog(int type, int mode){
+        System.out.println(callSystem.readLog(this.getNumber(), type, mode));
+    }
 
     public User(String number, CallSystem callSystem) {
         this.callSystem = callSystem;

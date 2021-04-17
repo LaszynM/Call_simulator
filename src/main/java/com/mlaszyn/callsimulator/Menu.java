@@ -10,9 +10,10 @@ public class Menu {
     List<User> userList;
     //Start the system:
     //Initiate list of users from their files
+    CallSystem callSystem;
     public Menu() {
         //Create CallSystem instance
-        CallSystem callSystem = new CallSystem();
+        callSystem = new CallSystem();
 
         //Create list of users
         userList = new LinkedList<User>();
@@ -25,13 +26,17 @@ public class Menu {
         for(int i = 0; i < list.length; i++) {
             userList.add(new User(list[i].getName().substring(0, list[i].getName().indexOf(".")), callSystem));
         }
-
         //Pass user list to system
         callSystem.setUserList(userList);
     }
 
     public void startProgram() {
         //TODO
+        User tescik = this.callSystem.findUser("555222333");
+        //tescik.sendMessage("606606606", "test");
+        tescik.call("888222999");
+        tescik.hangup();
+        //tescik.readLog(2, 1);
        /* while (true) {
             //System.out.print("\033[H\033[2J");
             //System.out.flush();

@@ -1,9 +1,7 @@
 package main.java.com.mlaszyn.callsimulator;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CallSystem {
@@ -12,18 +10,21 @@ public class CallSystem {
     //List of all calls in progress
     List<Call> callList;
     //Empty Constructor
-    public CallSystem(){}
+    public CallSystem(){
+        callList = new LinkedList<Call>();
+    }
     //Find user on user list
     public User findUser(String number){
         User user = null;
         for(int i = 0; i < userList.size(); i++) {
-            if(userList.get(i).getNumber() == number) {
+            if(userList.get(i).getNumber().equals(number)) {
                 user = userList.get(i);
                 break;
             }
         }
         return user;
     }
+
     public void setUserList(List<User> userList) { this.userList = userList; }
     public boolean initiateCall(User from, String to) {
         User caller = from;
@@ -63,8 +64,8 @@ public class CallSystem {
                         " finished, duration from:" + find.getStartDate() + " to:" + find.getHangupDate();
 
                 //TODO
-                writeLog(find.getReceiver().getNumber(), callerLog);
-                writeLog(find.getCaller().getNumber(), receiverLog);
+                writeLog(find.getReceiver().getNumber(), receiverLog);
+                writeLog(find.getCaller().getNumber(), callerLog);
 
                 //remove object from list
                 //IMPORTANT NOTE
@@ -91,11 +92,62 @@ public class CallSystem {
             return false;
         }
     }
+
+    public String readLog(String number, int type, int mode) {
+        try {
+            FileReader file = new FileReader("./users/" + number + ".txt");
+            BufferedReader reader = new BufferedReader(file);
+            String msgType;
+            boolean ifAll;
+            switch (mode) {
+                case 0:
+                    ifAll = false;
+                    break;
+                case 1:
+                    ifAll = true;
+                    break;
+                default:
+                    ifAll = false;
+
+            }
+            switch (type) {
+                case 0:
+                    msgType = "Call";
+                    break;
+                case 1:
+                    msgType = "Message";
+                    break;
+                case 2:
+                    msgType = "";
+                    break;
+                default:
+                    msgType = "";
+            }
+            String finalMsg = "";
+            String line = reader.readLine();
+            while(line != null) {
+                if (ifAll == true) {
+                    if (line.substring(0, line.indexOf(" ")).contains(msgType)) {
+                        finalMsg = finalMsg + line;
+                    }
+                }else {
+                    if(line.substring(0, line.indexOf(" ")).contains(msgType)) {
+                        finalMsg = line;
+                    }
+                }
+                line = reader.readLine();
+            }
+            return finalMsg;
+        } catch (IOException exc) {
+            return "Error! Can't read file";
+        }
+    }
+
     public boolean sendMessage(String number, String msg, User sender) {
         User receiver = findUser(number);
         if(receiver != null) {
-            String senderMsg = "To:" + number + " message:" +msg;
-            String receiverMsg = "From:" + number + " message:" +msg;
+            String senderMsg = "Message to:" + number + " content:" +msg;
+            String receiverMsg = "Message from:" + number + " content:" +msg;
             writeLog(sender.getNumber(), senderMsg);
             writeLog(number, receiverMsg);
             return true;
