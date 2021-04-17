@@ -34,4 +34,9 @@ public class User {
         callSystem.endCall(this);
     }
 
+    //sending a message
+    public void sendMessage(String number, String msg) {
+        callSystem.sendMessage(number, msg, this);
+    }
+
 }

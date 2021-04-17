@@ -1,5 +1,9 @@
 package main.java.com.mlaszyn.callsimulator;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class CallSystem {
@@ -9,16 +13,27 @@ public class CallSystem {
     List<Call> callList;
     //Empty Constructor
     public CallSystem(){}
-    public void setUserList(List<User> userList) { this.userList = userList; }
-    public boolean initiateCall(User from, String to) {
-        User caller = from;
-        User receiver = null;
+    //Find user on user list
+    public User findUser(String number){
+        User user = null;
         for(int i = 0; i < userList.size(); i++) {
-            if(userList.get(i).getNumber() == to) {
-                receiver = userList.get(i);
+            if(userList.get(i).getNumber() == number) {
+                user = userList.get(i);
                 break;
             }
         }
+        return user;
+    }
+    public void setUserList(List<User> userList) { this.userList = userList; }
+    public boolean initiateCall(User from, String to) {
+        User caller = from;
+        User receiver = findUser(to);
+        //for(int i = 0; i < userList.size(); i++) {
+        //    if(userList.get(i).getNumber() == to) {
+        //        receiver = userList.get(i);
+        //        break;
+        //    }
+        //}
         //TODO differentiate "number not found" and "number is busy"
         if(receiver == null)
             return false;
@@ -48,8 +63,8 @@ public class CallSystem {
                         " finished, duration from:" + find.getStartDate() + " to:" + find.getHangupDate();
 
                 //TODO
-                //writeLog(find.getReceiver().getNumber(), callerLog);
-                //writeLog(find.getCaller().getNumber(), receiverLog);
+                writeLog(find.getReceiver().getNumber(), callerLog);
+                writeLog(find.getCaller().getNumber(), receiverLog);
 
                 //remove object from list
                 //IMPORTANT NOTE
@@ -61,5 +76,30 @@ public class CallSystem {
             }
         }
         return true;
+    }
+
+    public boolean writeLog(String number, String log) {
+        try {
+            FileWriter file = new FileWriter("./users/"+number+".txt", true);
+            BufferedWriter writer = new BufferedWriter(file);
+            writer.write(log + "\n");
+            writer.close();
+            return true;
+
+        } catch(IOException exc) {
+            System.out.println("Can't open file!");
+            return false;
+        }
+    }
+    public boolean sendMessage(String number, String msg, User sender) {
+        User receiver = findUser(number);
+        if(receiver != null) {
+            String senderMsg = "To:" + number + " message:" +msg;
+            String receiverMsg = "From:" + number + " message:" +msg;
+            writeLog(sender.getNumber(), senderMsg);
+            writeLog(number, receiverMsg);
+            return true;
+        }
+        return false;
     }
 }
