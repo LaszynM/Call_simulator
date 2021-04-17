@@ -26,7 +26,7 @@ public class CallSystem {
     }
 
     public void setUserList(List<User> userList) { this.userList = userList; }
-    public boolean initiateCall(User from, String to) {
+    public int initiateCall(User from, String to) {
         User caller = from;
         User receiver = findUser(to);
         //for(int i = 0; i < userList.size(); i++) {
@@ -37,15 +37,17 @@ public class CallSystem {
         //}
         //TODO differentiate "number not found" and "number is busy"
         if(receiver == null)
-            return false;
+            return 1;
         if(receiver.getAvailable() == true) {
             caller.setAvailable(false);
             receiver.setAvailable(false);
             callList.add(new Call(caller, receiver));
-            return true;
+            return 0;
         }
         else
-            return false;
+            writeLog(to, "Call from:"+from.getNumber()+" unanswered");
+            writeLog(from.getNumber(), "Call to:"+to+" unanswered");
+            return 2;
     }
     //Ending call
     //TODO differentiate "disconnect" and "no active call"
@@ -97,18 +99,15 @@ public class CallSystem {
         try {
             FileReader file = new FileReader("./users/" + number + ".txt");
             BufferedReader reader = new BufferedReader(file);
-            String msgType;
-            boolean ifAll;
+            String msgType = "";
+            boolean ifAll = false;
             switch (mode) {
                 case 0:
-                    ifAll = false;
                     break;
                 case 1:
                     ifAll = true;
                     break;
                 default:
-                    ifAll = false;
-
             }
             switch (type) {
                 case 0:
@@ -118,21 +117,31 @@ public class CallSystem {
                     msgType = "Message";
                     break;
                 case 2:
-                    msgType = "";
+                    break;
+                case 3:
+                    msgType = "Message from";
+                    break;
+                case 4:
+                    msgType = "Message to";
+                    break;
+                case 5:
+                    msgType = "Call from";
+                    break;
+                case 6:
+                    msgType = "Call to";
                     break;
                 default:
-                    msgType = "";
             }
             String finalMsg = "";
             String line = reader.readLine();
             while(line != null) {
                 if (ifAll == true) {
-                    if (line.substring(0, line.indexOf(" ")).contains(msgType)) {
-                        finalMsg = finalMsg + line;
+                    if (line.substring(0, line.indexOf(":")).contains(msgType)) {
+                        finalMsg = finalMsg + line + "\n";
                     }
                 }else {
-                    if(line.substring(0, line.indexOf(" ")).contains(msgType)) {
-                        finalMsg = line;
+                    if(line.substring(0, line.indexOf(":")).contains(msgType)) {
+                        finalMsg = line + "\n";
                     }
                 }
                 line = reader.readLine();
@@ -152,6 +161,7 @@ public class CallSystem {
             writeLog(number, receiverMsg);
             return true;
         }
+        writeLog(sender.getNumber(), "Message to:" + number + " undelivered");
         return false;
     }
 }

@@ -1,6 +1,9 @@
 package main.java.com.mlaszyn.callsimulator;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,25 +35,133 @@ public class Menu {
 
     public void startProgram() {
         //TODO
-        User tescik = this.callSystem.findUser("555222333");
+        //User tescik = this.callSystem.findUser("555222333");
+        //User tescik2 = this.callSystem.findUser("606606606");
         //tescik.sendMessage("606606606", "test");
-        tescik.call("888222999");
-        tescik.hangup();
+        //tescik.call("888222999");
+        //tescik2.call("888222999");
+        //tescik.hangup();
         //tescik.readLog(2, 1);
-       /* while (true) {
-            //System.out.print("\033[H\033[2J");
-            //System.out.flush();
-            System.out.println("Main menu");
-            System.out.println("-------------");
-            System.out.println("1. Start call");
-            System.out.println("2. End call");
-            System.out.println("3. Check messages");
-            System.out.println("4. Check history");
-            break;
+       while(true) {
+            System.out.println("Menu");
+            System.out.println("Choose option:");
+            System.out.println("1: Initiate call");
+            System.out.println("2: End call");
+            System.out.println("3: Send message");
+            System.out.println("4: Check logs");
+            System.out.println("5: Exit program");
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                String name = reader.readLine();
+                if (name.equals("1")) {
+                    initCall();
+                } else if (name.equals("2")) {
+                    endCall();
+                }
+                else if (name.equals("3")) {
+                    sendMessage();
+                }
+                else if (name.equals("4")) {
+                    readLogs();
+                }
+                else if (name.equals("5"))
+                    return;
+                else
+                    System.out.println("Wrong command, please try again");
+            } catch (IOException io) {
+                System.out.println("Input error");
+            }
         }
-        System.out.print("\f");
-        System.out.flush();
-        */
+    }
+
+    public void initCall() {
+        while(true) {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("Please enter caller:");
+                String call = reader.readLine();
+                System.out.println("Please enter receiver:");
+                String val = reader.readLine();
+                User caller = this.callSystem.findUser(call);
+                if(caller != null) {
+                    caller.call(val);
+                    return;
+                } else
+                    System.out.println("User not found");
+                return;
+            } catch (IOException io) {
+                System.out.println("Input error");
+            }
+        }
 
     }
+    public void endCall() {
+        while(true) {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("Please enter number:");
+                String call = reader.readLine();
+                User caller = this.callSystem.findUser(call);
+                if(caller != null) {
+                    caller.hangup();
+                    return;
+                } else
+                    System.out.println("User not found");
+                return;
+            } catch (IOException io) {
+                System.out.println("Input error");
+            }
+        }
+    }
+
+    public void sendMessage() {
+        while(true) {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("Please enter sender:");
+                String call = reader.readLine();
+                System.out.println("Please enter receiver:");
+                String val = reader.readLine();
+                System.out.println("Please enter message:");
+                String msg = reader.readLine();
+                User caller = this.callSystem.findUser(call);
+                if(caller != null) {
+                    caller.sendMessage(val, msg);
+                    return;
+                } else
+                    System.out.println("User not found");
+                return;
+            } catch (IOException io) {
+                System.out.println("Input error");
+            }
+        }
+
+    }
+    public void readLogs() {
+        while(true) {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("Please enter user number:");
+                String call = reader.readLine();
+                System.out.println("Please enter log type \n" +
+                        "(type 0 - calls, type 1 - messages, type 2 - all\n" +
+                        "type 3 - messages from, type 4 - messages to\n" +
+                        "type 5 - calls from, type 6 - calls to):");
+                String type = reader.readLine();
+                System.out.println("Please enter mode (0 - last, 1 - all):");
+                String mode = reader.readLine();
+                User caller = this.callSystem.findUser(call);
+                if(caller != null) {
+                    caller.readLog(Integer.parseInt(type), Integer.parseInt(mode));
+                    return;
+                } else
+                    System.out.println("User not found");
+                return;
+            } catch (IOException io) {
+                System.out.println("Input error");
+            }
+        }
+
+    }
+
 }
